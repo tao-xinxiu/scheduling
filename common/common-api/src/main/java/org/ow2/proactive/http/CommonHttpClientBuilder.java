@@ -31,6 +31,7 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
@@ -59,6 +60,8 @@ public class CommonHttpClientBuilder {
     protected boolean acceptAnyCertificate = false;
 
     protected boolean acceptAnyHostname = false;
+
+    private HttpRequestRetryHandler retryHandler;
 
     public CommonHttpClientBuilder() {
         this.useContentCompression = true;
@@ -92,6 +95,11 @@ public class CommonHttpClientBuilder {
 
     public CommonHttpClientBuilder setDefaultRequestConfig(RequestConfig requestConfig) {
         this.requestConfig = requestConfig;
+        return this;
+    }
+
+    public CommonHttpClientBuilder retryHandler(HttpRequestRetryHandler retryHandler) {
+        this.retryHandler = retryHandler;
         return this;
     }
 
@@ -142,6 +150,10 @@ public class CommonHttpClientBuilder {
 
         if (requestConfig != null) {
             internalHttpClientBuilder.setDefaultRequestConfig(requestConfig);
+        }
+
+        if (retryHandler != null) {
+            internalHttpClientBuilder.setRetryHandler(retryHandler);
         }
 
         if (!useContentCompression) {
